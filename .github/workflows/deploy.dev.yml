@@ -33,7 +33,7 @@ jobs:
       #     echo "${{ secrets.ENV_FILE }}" > env.yml
       
       - name: Show event
-        run: echo "${{ github.event }}"
+        run: echo "${{ toJSON(github.event) }}"
 
   
 
