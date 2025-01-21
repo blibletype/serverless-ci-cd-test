@@ -3,7 +3,7 @@ Name: Deploy serverless application to development environment
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
 
 jobs:
   deploy:
