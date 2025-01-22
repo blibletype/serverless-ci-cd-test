@@ -30,6 +30,7 @@ jobs:
       - name: Setup environment variables
         run: |
           touch env.yml
+          echo "${{ secrets.ENV_FILE }}"
           echo "${{ secrets.ENV_FILE }}" > env.yml
           cat env.yml
       
@@ -37,7 +38,7 @@ jobs:
         run: echo "${{ github }}"
         
       - name: Run migrations
-        if: contains(github.event.head_commit.message, '[run-migrations=true]')
+        if: contains(github.event.head_commit.message, '[migrations=true]')
         run: echo "Run migrations"
 
   
