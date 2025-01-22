@@ -63,7 +63,7 @@ jobs:
               - type: "section"
                 text:
                   type: "mrkdwn"
-                  text: "GitHub Action build result: *${{ job.status }}*"
+                  text: "GitHub Action build result: *${{ job.status }}* \
                     \nCommit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
                     \nAuthor: *${{ github.event.head_commit.author.name }}* \
                     \nMigrations: *${{ env.RUN_MIGRATIONS && 'yes' || 'no' }}*"
