@@ -62,11 +62,11 @@ jobs:
               - type: "header"
                 text:
                   type: "mrkdwn"
-                  text: "GitHub Action build result: *${{ job.status }}*""
+                  text: "GitHub Action build result: *${{ job.status }}*"
               - type: "section"
                 text:
                   type: "mrkdwn"
-                  text: "Migrations: *${{ $RUN_MIGRATIONS && 'yes' || 'no' }}*"
+                  text: "Migrations: *${{ env.RUN_MIGRATIONS == true && 'yes' || 'no' }}*"
               - type: "section"
                 text:
                   type: "mrkdwn"
