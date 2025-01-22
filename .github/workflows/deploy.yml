@@ -34,6 +34,9 @@ jobs:
           touch env.yml
           echo "${{ secrets.ENV_FILE }}" > env.yml
 
+      - name: show head commit message
+        run: echo "${{ github.event.head_commit.message }}"
+
       - name: install dependencies
         run: yarn install --production --frozen-lockfile
 
@@ -68,7 +71,8 @@ jobs:
               - type: "section"
                 text:
                   type: "mrkdwn"
-                  text: "Commit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
+                  text: "*${{ github.event.head_commit.message }}* \
+                    \nCommit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
                     \nMigrations: *${{ env.RUN_MIGRATIONS == true && 'yes' || 'no' }}*"
               - type: "section"
                 fields:
