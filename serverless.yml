@@ -10,9 +10,6 @@ provider:
   layers:
     - !Ref SharpLambdaLayer
 
-plugins:
-  - serverless-confirm-command
-
 layers:
   sharp:
     path: layers/sharp_layer
@@ -27,3 +24,6 @@ custom:
 functions:
   index:
     handler: src/functions/index.handler
+
+plugins:
+  - serverless-confirm-command
