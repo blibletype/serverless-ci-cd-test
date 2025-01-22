@@ -7,6 +7,22 @@ provider:
   stage: ${opt:stage}
   environment: ${file(env.yml):${self:provider.stage}}
   region: ${file(env.yml):${self:provider.stage}.AWS_REGION}
+  layers:
+    - !Ref SharpLambdaLayer
+
+plugins:
+  - serverless-confirm-command
+
+layers:
+  sharp:
+    path: layers/sharp_layer
+    description: Sharp image processing lambda layer
+
+custom:
+  confirm:
+    type: 'typed'
+    commands:
+      - 'deploy'
 
 functions:
   index:

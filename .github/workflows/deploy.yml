@@ -13,33 +13,40 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-      # - name: Use Node.js ${{ matrix.node-version }}
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: ${{ matrix.node-version }}
-      #     cache: 'yarn'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
-      # - name: Build sharp layer
-      #   run: | 
-      #     npm --prefix ./layers/sharp_layer/nodejs/node20 \
-      #       install --cpu=x64 --os=linux --libc=glibc sharp
+      - name: build sharp layer
+        run: | 
+          npm --prefix ./layers/sharp_layer/nodejs/node20 \
+            install --cpu=x64 --os=linux --libc=glibc sharp
 
-      # - name: Install dependencies
-      #   run: yarn install --production --frozen-lockfile
-
-      - name: Setup environment variables
+      - name: setup environment variables
         run: |
           touch env.yml
-          echo "${{ toJSON(secrets.ENV_FILE) }}"
           echo "${{ secrets.ENV_FILE }}" > env.yml
-          cat env.yml
-      
-      - name: Show event
-        run: echo "${{ github }}"
-        
-      - name: Run migrations
-        if: contains(github.event.head_commit.message, '[migrations=true]')
+
+      - name: install dependencies
+        run: yarn install --production --frozen-lockfile
+
+      - name: run migrations
+        if: contains(github.event.head_commit.message, '[x] migrations needed')
         run: echo "Run migrations"
+
+      - name: serverless deploy
+        uses: serverless/github-action@v3.2
+        with:
+          args: |
+            -c "serverless plugin uninstall --name serverless-confirm-command \
+              && serverless deploy --stage \
+              ${{ github.ref_name == 'main' && 'production' || 'staging' }}"
+          entrypoint: /bin/sh
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   
 
