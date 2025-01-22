@@ -6,6 +6,7 @@ on:
 env:
   STAGE: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
   RUN_MIGRATIONS: ${{ contains(github.event.head_commit.message, '[x] run migrations') }}
+  JOB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 jobs:
   deploy:
@@ -63,11 +64,18 @@ jobs:
               - type: "section"
                 text:
                   type: "mrkdwn"
-                  text: "GitHub Action build result: *${{ job.status }}* \
-                    \nBranch: *${{ github.ref_name }}* \
-                    \nCommit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
-                    \nAuthor: *${{ github.event.head_commit.author.name }}* \
+                  text: "GitHub Action build result: *${{ job.status }}*"
+              - type: "section"
+                text:
+                  type: "mrkdwn"
+                  text: "Commit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
                     \nMigrations: *${{ env.RUN_MIGRATIONS && 'yes' || 'no' }}*"
+              - type: "section"
+                fields:
+                  - type: "mrkdwn"
+                    text: "Branch: *${{ github.ref_name }}*"
+                  - type: "mrkdwn"
+                    text: "Author: *${{ github.event.head_commit.author.name }}*"
               - type: "actions"
                 elements:
                   - type: "button"
@@ -75,5 +83,5 @@ jobs:
                       type: "plain_text"
                       emoji: true
                       text: "Details"
-                    url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    url: "${{ env.JOB_URL }}"
                     action_id: "view"
