@@ -61,7 +61,7 @@ jobs:
           payload: |
             text: "GitHub Action build result: *${{ job.status }}*"
             blocks:
-              - type: "section"
+              - type: "header"
                 text:
                   type: "mrkdwn"
                   text: "GitHub Action build result: *${{ job.status }}*"
