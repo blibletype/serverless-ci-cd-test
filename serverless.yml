@@ -6,8 +6,24 @@ provider:
   runtime: nodejs20.x
   stage: ${opt:stage}
   environment: ${file(env.yml):${self:provider.stage}}
-  region: ${file(env.yml):${self:provider.stage}.AWS_REGION}
+  region: ${file(env.yml):${self:provider.stage}.AMZ_REGION}
+  layers:
+    - !Ref SharpLambdaLayer
+
+layers:
+  sharp:
+    path: layers/sharp_layer
+    description: Sharp image processing lambda layer
+
+custom:
+  confirm:
+    type: 'typed'
+    commands:
+      - 'deploy'
 
 functions:
   index:
     handler: src/functions/index.handler
+
+plugins:
+  - serverless-confirm-command

@@ -3,6 +3,11 @@ on:
   push:
     branches: [ "develop", "main" ]
 
+env:
+  STAGE: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+  RUN_MIGRATIONS: ${{ contains(github.event.head_commit.message, '[x] run migrations') }}
+  JOB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,32 +18,70 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-      # - name: Use Node.js ${{ matrix.node-version }}
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: ${{ matrix.node-version }}
-      #     cache: 'yarn'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
-      # - name: Build sharp layer
-      #   run: | 
-      #     npm --prefix ./layers/sharp_layer/nodejs/node20 \
-      #       install --cpu=x64 --os=linux --libc=glibc sharp
+      - name: build sharp layer
+        run: | 
+          npm --prefix ./layers/sharp_layer/nodejs/node20 \
+            install --cpu=x64 --os=linux --libc=glibc sharp
 
-      # - name: Install dependencies
-      #   run: yarn install --production --frozen-lockfile
-
-      - name: Setup environment variables
+      - name: setup environment variables
         run: |
           touch env.yml
           echo "${{ secrets.ENV_FILE }}" > env.yml
-          cat env.yml
-      
-      - name: Show event
-        run: echo "${{ github }}"
-        
-      - name: Run migrations
-        if: contains(github.event.head_commit.message, '[run-migrations=true]')
+
+      - name: install dependencies
+        run: yarn install --production --frozen-lockfile
+
+      - name: run migrations
+        if: ${{ env.RUN_MIGRATIONS == true }}
         run: echo "Run migrations"
 
-  
+      - name: install serverless
+        run: npm install -g serverless@3.38.0
 
+      - name: serverless remove confirm command
+        run: serverless plugin uninstall --name serverless-confirm-command --stage $STAGE
+
+      # - name: serverless deploy
+      #   run: serverless deploy --stage $STAGE
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Post a message in a channel
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: "GitHub Action build result: *${{ job.status }}*"
+            blocks:
+              - type: "section"
+                text:
+                  type: "mrkdwn"
+                  text: "GitHub Action build result: *${{ job.status }}*"
+              - type: "section"
+                text:
+                  type: "mrkdwn"
+                  text: "Commit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
+                    \nMigrations: *${{ env.RUN_MIGRATIONS == true && 'yes' || 'no' }}*"
+              - type: "section"
+                fields:
+                  - type: "mrkdwn"
+                    text: "Branch: *${{ github.ref_name }}*"
+                  - type: "mrkdwn"
+                    text: "Author: *${{ github.event.head_commit.author.name }}*"
+              - type: "actions"
+                elements:
+                  - type: "button"
+                    text:
+                      type: "plain_text"
+                      emoji: true
+                      text: "Details"
+                    url: "${{ env.JOB_URL }}"
+                    action_id: "view"
