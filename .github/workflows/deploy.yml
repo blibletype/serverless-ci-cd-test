@@ -30,7 +30,7 @@ jobs:
       - name: Setup environment variables
         run: |
           touch env.yml
-          echo "${{ secrets }}"
+          echo "${{ toJSON(secrets) }}"
           echo "${{ secrets.ENV_FILE }}" > env.yml
           cat env.yml
       
