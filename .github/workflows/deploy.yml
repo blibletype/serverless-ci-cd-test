@@ -34,6 +34,9 @@ jobs:
           touch env.yml
           echo "${{ secrets.ENV_FILE }}" > env.yml
 
+      - name: show head commit message
+        run: echo "${{ github.event.head_commit.message }}"
+
       - name: install dependencies
         run: yarn install --production --frozen-lockfile
 
