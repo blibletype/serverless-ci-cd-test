@@ -63,10 +63,10 @@ jobs:
               - type: "section"
                 text:
                   type: "mrkdwn"
-                  text: ":rocket: GitHub Action build result: *${{ job.status }}* ${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} \
-                    \n:link: Commit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
-                    \n:bust_in_silhouette: Author: *${{ github.event.head_commit.author.name }}* \
-                    \n:fast_forward: Migrations: *${{ env.RUN_MIGRATIONS && 'yes' || 'no' }}*"
+                  text: "GitHub Action build result: *${{ job.status }}*"
+                    \nCommit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
+                    \nAuthor: *${{ github.event.head_commit.author.name }}* \
+                    \nMigrations: *${{ env.RUN_MIGRATIONS && 'yes' || 'no' }}*"
               - type: "section"
                 text:
                   type: "mrkdwn"
@@ -76,7 +76,7 @@ jobs:
                   text:
                     type: "plain_text"
                     emoji: true
-                    text: ":arrow_forward: View job"
+                    text: "Details"
                   value: "view"
-                  url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}"
+                  url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   action_id: "view"
