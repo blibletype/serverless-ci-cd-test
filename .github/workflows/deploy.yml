@@ -66,9 +66,7 @@ jobs:
                   text: ":rocket: GitHub Action build result: *${{ job.status }}* ${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} \
                     \n:link: Commit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
                     \n:bust_in_silhouette: Author: *${{ github.event.head_commit.author.name }}* \
-                    \n:fast_forward: Migrations: *${{ env.RUN_MIGRATIONS && 'yes' || 'no' }}* \
-                    \n:link: Job: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}|Link to job> \
-                    
+                    \n:fast_forward: Migrations: *${{ env.RUN_MIGRATIONS && 'yes' || 'no' }}*"
               - type: "section"
                 text:
                   type: "mrkdwn"
