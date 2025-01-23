@@ -5,7 +5,6 @@ on:
 
 env:
   STAGE: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
-  RUN_MIGRATIONS: ${{ contains(github.event.head_commit.message, '[x] run migrations') }}
   JOB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 jobs:
@@ -40,10 +39,6 @@ jobs:
       - name: install dependencies
         run: yarn install --production --frozen-lockfile
 
-      - name: run migrations
-        if: ${{ env.RUN_MIGRATIONS == true }}
-        run: echo "Run migrations"
-
       - name: install serverless
         run: npm install -g serverless@3.38.0
 
@@ -71,8 +66,7 @@ jobs:
               - type: "section"
                 text:
                   type: "mrkdwn"
-                  text: "*${{ github.event.head_commit.message }}* \
-                    \nCommit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
+                  text: "Commit: *<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|Link to commit>* \
                     \nMigrations: *${{ env.RUN_MIGRATIONS == true && 'yes' || 'no' }}*"
               - type: "section"
                 fields:
